@@ -1,0 +1,173 @@
+<!-- En-tête avec statistiques -->
+<div class="grid mb-4">
+  <div class="col-12">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Mes Tâches</h2>
+  </div>
+
+  <!-- Cartes de statistiques -->
+  <div class="col-12 md:col-3">
+    <p-card styleClass="bg-blue-50 border-blue-200">
+      <div class="flex align-items-center">
+        <div class="flex align-items-center justify-content-center bg-blue-500 border-circle" style="width:3rem;height:3rem">
+          <i class="pi pi-list text-white text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <span class="block text-gray-500 font-medium text-sm">Total</span>
+          <div class="text-2xl font-bold text-gray-900">{{ getTachesStats().total }}</div>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <div class="col-12 md:col-3">
+    <p-card styleClass="bg-orange-50 border-orange-200">
+      <div class="flex align-items-center">
+        <div class="flex align-items-center justify-content-center bg-orange-500 border-circle" style="width:3rem;height:3rem">
+          <i class="pi pi-clock text-white text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <span class="block text-gray-500 font-medium text-sm">En attente</span>
+          <div class="text-2xl font-bold text-gray-900">{{ getTachesStats().enAttente }}</div>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <div class="col-12 md:col-3">
+    <p-card styleClass="bg-cyan-50 border-cyan-200">
+      <div class="flex align-items-center">
+        <div class="flex align-items-center justify-content-center bg-cyan-500 border-circle" style="width:3rem;height:3rem">
+          <i class="pi pi-play text-white text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <span class="block text-gray-500 font-medium text-sm">En cours</span>
+          <div class="text-2xl font-bold text-gray-900">{{ getTachesStats().enCours }}</div>
+        </div>
+      </div>
+    </p-card>
+  </div>
+
+  <div class="col-12 md:col-3">
+    <p-card styleClass="bg-green-50 border-green-200">
+      <div class="flex align-items-center">
+        <div class="flex align-items-center justify-content-center bg-green-500 border-circle" style="width:3rem;height:3rem">
+          <i class="pi pi-check text-white text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <span class="block text-gray-500 font-medium text-sm">Terminées</span>
+          <div class="text-2xl font-bold text-gray-900">{{ getTachesStats().terminees }}</div>
+        </div>
+      </div>
+    </p-card>
+  </div>
+</div>
+
+<!-- Toolbar -->
+<div class="card">
+  <p-toolbar styleClass="mb-4">
+    <ng-template pTemplate="start">
+      <h5 class="m-0 text-gray-800">Liste de mes tâches</h5>
+    </ng-template>
+    <ng-template pTemplate="end">
+      <p-button 
+        label="Actualiser" 
+        icon="pi pi-refresh" 
+        severity="secondary" 
+        (onClick)="refreshTaches()" 
+        class="mr-2">
+      </p-button>
+    </ng-template>
+  </p-toolbar>
+
+  <!-- Table des tâches -->
+  <p-table
+    #dt
+    [value]="mesTaches()"
+    [rows]="10"
+    [paginator]="true"
+    [globalFilterFields]="['titre', 'description', 'etatTache']"
+    [rowHover]="true"
+    dataKey="id"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Affichage {first} à {last} de {totalRecords} tâches"
+    [rowsPerPageOptions]="[5, 10, 25]"
+    styleClass="p-datatable-sm">
+
+    <!-- Caption -->
+    <ng-template pTemplate="caption">
+      <div class="flex items-center justify-between">
+        <span class="text-lg font-semibold text-gray-700">Mes tâches assignées</span>
+        <span class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Rechercher une tâche..." />
+        </span>
+      </div>
+    </ng-template>
+
+    <!-- En-tête du tableau -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="titre">Titre <p-sortIcon field="titre"></p-sortIcon></th>
+        <th pSortableColumn="description">Description <p-sortIcon field="description"></p-sortIcon></th>
+        <th pSortableColumn="dateEcheance">Échéance <p-sortIcon field="dateEcheance"></p-sortIcon></th>
+        <th pSortableColumn="etatTache">État actuel <p-sortIcon field="etatTache"></p-sortIcon></th>
+        <th>Progression</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+
+    <!-- Corps du tableau -->
+    <ng-template pTemplate="body" let-tache>
+      <tr [ngClass]="{
+        'bg-red-50': isTaskOverdue(tache.dateEcheance) && tache.etatTache !== 'TERMINE',
+        'bg-yellow-50': isTaskDueSoon(tache.dateEcheance) && tache.etatTache !== 'TERMINE'
+      }">
+        <td>
+          <div class="flex align-items-center">
+            <i [class]="getStatutIcon(tache.etatTache)" class="mr-2"></i>
+            <span class="font-medium">{{ tache.titre }}</span>
+          </div>
+        </td>
+        <td>{{ tache.description || 'Aucune description' }}</td>
+        <td>
+          <div class="flex align-items-center">
+            <i class="pi pi-calendar mr-2 text-gray-500"></i>
+            <span [ngClass]="{
+              'text-red-600 font-semibold': isTaskOverdue(tache.dateEcheance) && tache.etatTache !== 'TERMINE',
+              'text-orange-600 font-semibold': isTaskDueSoon(tache.dateEcheance) && tache.etatTache !== 'TERMINE'
+            }">
+              {{ tache.dateEcheance | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+        </td>
+        <td>
+        </td>
+        <td>
+          <div class="flex align-items-center">
+            <p-progressBar [value]="getProgress(tache.etatTache)" [showValue]="false" styleClass="w-full mr-2"></p-progressBar>
+            <span class="text-sm text-gray-600">{{ getProgress(tache.etatTache) }}%</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex gap-2">
+            <p-button icon="pi pi-eye" class="p-button-rounded p-button-info p-button-sm" (click)="voirDetails(tache)" pTooltip="Voir les détails"></p-button>
+
+            <p-button *ngIf="tache.etatTache === 'EN_ATTENTE'" icon="pi pi-play" class="p-button-rounded p-button-warning p-button-sm" (click)="marquerProgression(tache, EtatTache.EN_COURS)" pTooltip="Marquer en cours"></p-button>
+
+            <p-button *ngIf="tache.etatTache !== 'TERMINE'" icon="pi pi-check" class="p-button-rounded p-button-success p-button-sm" (click)="marquerProgression(tache, EtatTache.TERMINE)" pTooltip="Marquer terminé"></p-button>
+
+            <!-- Dropdown pour changer d'état -->
+            <p-dropdown 
+              [options]="etatOptions" 
+              [(ngModel)]="tache.etatTache" 
+              optionLabel="label" 
+              placeholder="Changer état"
+              (onChange)="changerEtat(tache)">
+            </p-dropdown>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+</div>

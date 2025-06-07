@@ -1,0 +1,279 @@
+<!-- Barre d'outils -->
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        <p-button 
+            label="Nouvelle Demande" 
+            icon="pi pi-plus" 
+            severity="secondary" 
+            class="mr-2" 
+            (onClick)="openNew()" />
+        <p-button 
+            severity="secondary" 
+            label="Supprimer" 
+            icon="pi pi-trash" 
+            outlined 
+            [disabled]="!selectedDemandes || !selectedDemandes.length" 
+            (onClick)="deleteSelectedDemandes()" />
+    </ng-template>
+    
+    <ng-template #end>
+        <p-button 
+            label="Exporter CSV" 
+            icon="pi pi-upload" 
+            severity="secondary" 
+            (onClick)="exportCSV()" />
+    </ng-template>
+</p-toolbar>
+
+<!-- Tableau des demandes de congé -->
+<p-table
+    #dt
+    [value]="demandes()"
+    [rows]="10"
+    [columns]="cols"
+    [paginator]="true"
+    [globalFilterFields]="['id', 'type', 'statut', 'dateDebut', 'dateFin']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedDemandes"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Affichage {first} à {last} sur {totalRecords} demandes"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]"
+>
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="m-0">Mes Demandes de Congé</h5>
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input 
+                    pInputText 
+                    type="text" 
+                    (input)="onGlobalFilter(dt, $event)" 
+                    placeholder="Rechercher..." />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox />
+            </th>
+            
+            <th pSortableColumn="id" style="min-width: 6rem">
+                ID
+                <p-sortIcon field="id" />
+            </th>
+            
+            <th pSortableColumn="dateDebut" style="min-width: 10rem">
+                Date début
+                <p-sortIcon field="dateDebut" />
+            </th>
+            
+            <th pSortableColumn="dateFin" style="min-width: 10rem">
+                Date fin
+                <p-sortIcon field="dateFin" />
+            </th>
+            
+            <th pSortableColumn="type" style="min-width: 10rem">
+                Type
+                <p-sortIcon field="type" />
+            </th>
+            
+            <th pSortableColumn="statut" style="min-width: 10rem">
+                Statut
+                <p-sortIcon field="statut" />
+            </th>
+            
+            <th style="min-width: 8rem">Jours</th>
+            
+            <th style="min-width: 12rem">Actions</th>
+        </tr>
+    </ng-template>
+    
+    <ng-template #body let-demande>
+        <tr>
+            <td style="width: 3rem">
+                <p-tableCheckbox [value]="demande" />
+            </td>
+            
+            <td style="min-width: 6rem">{{demande.id}}</td>
+            
+            <td style="min-width: 10rem">{{formatDate(demande.dateDebut)}}</td>
+            
+            <td style="min-width: 10rem">{{formatDate(demande.dateFin)}}</td>
+            
+            <td style="min-width: 10rem">{{getTypeText(demande.type)}}</td>
+            
+            <td style="min-width: 10rem">
+                <!-- FIXED: Use getStatusText for display and getSeverity for styling -->
+                <p-tag [value]="getStatusText(demande.statut)" [severity]="getSeverity(demande.statut)"></p-tag>
+            </td>
+            
+            <td style="min-width: 8rem">{{demande.nombreJoursOuvres || 0}}</td>
+            
+            <td>
+                <p-button 
+                    icon="pi pi-pencil" 
+                    class="mr-2" 
+                    [rounded]="true" 
+                    [outlined]="true" 
+                    [disabled]="!canModifyOrDelete(demande)"
+                    pTooltip="Modifier"
+                    tooltipPosition="top"
+                    (click)="editDemande(demande)" />
+                <p-button 
+                    icon="pi pi-trash" 
+                    severity="danger" 
+                    [rounded]="true" 
+                    [outlined]="true" 
+                    [disabled]="!canModifyOrDelete(demande)"
+                    pTooltip="Supprimer"
+                    tooltipPosition="top"
+                    (click)="deleteDemande(demande)" />
+            </td>
+        </tr>
+    </ng-template>
+    
+    <!-- Message si aucune demande -->
+    <ng-template #emptymessage>
+        <tr>
+            <td colspan="8" class="text-center">
+                <div class="flex flex-col items-center justify-center p-6">
+                    <i class="pi pi-calendar-times text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-500 mb-4">Aucune demande de congé trouvée</p>
+                    <p-button 
+                        label="Créer ma première demande" 
+                        icon="pi pi-plus" 
+                        severity="secondary"
+                        (onClick)="openNew()" />
+                </div>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<!-- Dialogue de création/modification de demande -->
+<p-dialog 
+    [(visible)]="demandeDialog" 
+    [style]="{ width: '600px' }" 
+    header="{{submittedAddNew ? 'Nouvelle Demande de Congé' : 'Modifier la Demande'}}" 
+    [modal]="true"
+    [closeOnEscape]="false"
+    [closable]="true">
+    
+    <ng-template #content>
+        <div class="flex flex-col gap-4">
+            <!-- Date de début -->
+            <div class="flex flex-col gap-2">
+                <label for="dateDebut" class="font-bold">
+                    Date de début <span class="text-red-500">*</span>
+                </label>
+                <p-calendar 
+                    id="dateDebut" 
+                    [(ngModel)]="demande.dateDebut" 
+                    [showIcon]="true" 
+                    [style]="{'width':'100%'}" 
+                    [required]="true" 
+                    dateFormat="dd/mm/yy"
+                    [minDate]="today"
+                    placeholder="Sélectionner la date de début">
+                </p-calendar>
+                <small class="text-red-500" *ngIf="submitted && !demande.dateDebut">
+                    La date de début est requise.
+                </small>
+            </div>
+
+            <!-- Date de fin -->
+            <div class="flex flex-col gap-2">
+                <label for="dateFin" class="font-bold">
+                    Date de fin <span class="text-red-500">*</span>
+                </label>
+                <p-calendar 
+                    id="dateFin" 
+                    [(ngModel)]="demande.dateFin" 
+                    [showIcon]="true" 
+                    [style]="{'width':'100%'}" 
+                    [required]="true" 
+                    dateFormat="dd/mm/yy"
+                    [minDate]="getMinEndDate()"
+                    placeholder="Sélectionner la date de fin">
+                </p-calendar>
+                <small class="text-red-500" *ngIf="submitted && !demande.dateFin">
+                    La date de fin est requise.
+                </small>
+                <small class="text-red-500" *ngIf="submitted && demande.dateDebut && demande.dateFin && demande.dateDebut > demande.dateFin">
+                    La date de début doit être antérieure à la date de fin.
+                </small>
+            </div>
+            
+            <!-- Type de congé -->
+            <div class="flex flex-col gap-2">
+                <label for="type" class="font-bold">
+                    Type de congé <span class="text-red-500">*</span>
+                </label>
+                <p-dropdown 
+                    id="type" 
+                    [options]="typeCongeOptions" 
+                    [(ngModel)]="demande.type" 
+                    optionLabel="label" 
+                    optionValue="value" 
+                    [style]="{'width':'100%'}" 
+                    placeholder="Sélectionner un type">
+                </p-dropdown>
+                <small class="text-red-500" *ngIf="submitted && !demande.type">
+                    Le type de congé est requis.
+                </small>
+            </div>
+            
+            <!-- Informations supplémentaires -->
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="pi pi-info-circle text-blue-400"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-blue-800">
+                            Informations importantes
+                        </h3>
+                        <div class="mt-2 text-sm text-blue-700">
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Les demandes ne peuvent être modifiées que si elles sont en attente</li>
+                                <li>Les weekends et jours fériés ne sont pas comptabilisés dans les congés payés</li>
+                                <li>Votre demande sera soumise à validation par votre responsable</li>
+                                <li>Un minimum d'employés doit rester présent dans le service</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    
+    <ng-template #footer>
+        <p-button 
+            label="Annuler" 
+            icon="pi pi-times" 
+            text 
+            (click)="hideDialog()" />
+        <p-button 
+            *ngIf="submittedAddNew" 
+            label="Enregistrer" 
+            icon="pi pi-check" 
+            [loading]="submitted"
+            (click)="saveDemande()" />
+        <p-button 
+            *ngIf="submittedUpdate" 
+            label="Mettre à jour" 
+            icon="pi pi-check" 
+            [loading]="submitted"
+            (click)="saveDemande()" />
+    </ng-template>
+</p-dialog>
+
+<!-- Dialogue de confirmation -->
+<p-confirmDialog [style]="{ width: '450px' }"></p-confirmDialog>
+
+<!-- Messages toast -->
+<p-toast [life]="5000"></p-toast>

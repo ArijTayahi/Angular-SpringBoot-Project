@@ -1,0 +1,6 @@
+export enum Grade {
+    AGENT = 'AGENT',
+    CHEF_SERVICE = 'CHEF_SERVICE',
+    CHEF_DEPARTEMENT = 'CHEF_DEPARTEMENT',
+    DIRECTEUR = 'DIRECTEUR'
+  }

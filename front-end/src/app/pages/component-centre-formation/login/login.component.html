@@ -1,0 +1,87 @@
+<app-floating-configurator />
+<div class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
+    <!-- Carte avec effet de gradient border -->
+    <div class="relative p-0.5 rounded-3xl bg-gradient-to-b from-primary-500 to-transparent">
+      <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 sm:p-10 shadow-lg">
+        <!-- Logo et en-tête -->
+        <div class="text-center mb-10">
+          <div class="w-16 h-16 mx-auto mb-6">
+            
+          </div>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Welcome to ONT !</h1>
+          <p class="text-gray-500 dark:text-gray-400">Sign in to continue</p>
+        </div>
+
+        <!-- Formulaire -->
+        <form class="space-y-6">
+          <!-- Champ Email -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Email address"
+              [(ngModel)]="credentials.email"
+              name="email"
+              class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+            />
+          </div>
+
+          <!-- Champ Mot de passe -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+            <div class="relative">
+              <input
+                id="password"
+                type="password"
+                placeholder="Password"
+                [(ngModel)]="credentials.password"
+                name="password"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition pr-10"
+              />
+             <!-- <button
+                type="button"
+                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
+                (click)="togglePasswordVisibility()"
+              >
+                <i class="pi pi-eye"></i>
+              </button>-->
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <input
+                id="remember-me"
+                type="checkbox"
+                [(ngModel)]="checked"
+                name="remember-me"
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+              />
+              <label for="remember-me" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">Remember me</label>
+            </div>
+
+            <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">Forgot password?</a>
+          </div>
+
+          <!-- Bouton de soumission -->
+          <button
+          (click)="login()"
+            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition"
+            routerLink="/"
+          >
+            Sign In
+          </button>
+        </form>
+
+        <!-- Footer optionnel -->
+        <div class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+          Don't have an account? <a href="#" class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400">Sign up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

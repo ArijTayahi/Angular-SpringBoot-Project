@@ -1,0 +1,120 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+        <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined  [disabled]="! selectedserviceCentre || ! selectedserviceCentre.length" />
+    </ng-template>
+
+
+    <ng-template #end>
+        <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+    </ng-template>
+</p-toolbar>
+
+
+<p-table
+    #dt
+    [value]="servicesCentres()"
+    [rows]="10"
+    [columns]="cols"
+    [paginator]="true"
+    [globalFilterFields]="['id', 'titre']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedserviceCentre"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Affichage {first} to {last} of {totalRecords} serviceSCentres"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]"
+>
+    <ng-template #caption>
+        <div class="flex items-center justify-between">
+            <h5 class="m-0">gestion serviceCentre</h5>
+            <p-iconfield>
+                <p-inputicon styleClass="pi pi-search" />
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <ng-template #header>
+        <tr>
+            <th style="width: 3rem">
+                <p-tableHeaderCheckbox />
+            </th>
+           
+            <th pSortableColumn="id" style="min-width:16rem">
+                id
+                <p-sortIcon field="id" />
+            </th>
+           
+            <th pSortableColumn="titre" style="min-width: 8rem">
+                titre
+                <p-sortIcon field="titre" />
+            </th>
+        <th pSortableColumn="directionDto.titre" style="min-width: 8rem">
+    nom direction
+    <p-sortIcon field="directionDto.titre" />
+</th>
+        
+           
+           
+            <th style="min-width: 12rem"></th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-servicesCentres>
+        <tr>
+            <td style="width: 3rem">
+                <p-tableCheckbox [value]="serviceCentre" />
+            </td>
+            <td style="min-width: 12rem">{{servicesCentres.id }}</td>
+            <td style="min-width: 16rem">{{servicesCentres.titre }}</td>           
+<td style="min-width: 16rem">{{servicesCentres.directionDto?.titre}}</td>            <td>
+                <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editserviceCentre(servicesCentres)" />
+                <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteServiceCentre(servicesCentres)" />
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+
+<p-dialog [(visible)]="serviceCentreDialog" [style]="{ width: '450px',height: '500px' }" header="serviceCentre Details" [modal]="true">
+    <ng-template #content>
+        <div class="flex flex-col gap-6">
+           
+            <div>
+                <label for="name" class="block font-bold mb-3">titre</label>
+                <input type="text" pInputText id="name" [(ngModel)]="serviceCentre.titre" required autofocus fluid />
+                <small class="text-red-500" *ngIf="submitted && !serviceCentre.titre">titre is required.</small>
+            </div>
+           
+        </div>
+            <div class="col-12 md:col-6">
+                <label for="formation" class="block font-medium mb-2">Direction</label>
+                <p-dropdown id="direction"
+                    [(ngModel)]="serviceCentre.id_direction"
+                    [options]="directions()"
+                    optionLabel="titre"
+                    optionValue="id"
+                    placeholder="Sélectionner une direction"
+                    [style]="{'width':'100%'}"
+                    (onChange)="onFormationSelect($event)"></p-dropdown>
+            </div>
+    </ng-template>
+
+
+    <ng-template #footer>
+        <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+        <p-button *ngIf="submittedaddnew" label="Save" icon="pi pi-check" (click)="saveServiceCentre()" />
+        <p-button *ngIf="submittedupdate" label="update" icon="pi pi-check" (click)="saveServiceCentre()" />
+    </ng-template>
+   
+</p-dialog>
+
+
+<p-confirmdialog [style]="{ width: '450px' }" />
+
+
+
+
+
+

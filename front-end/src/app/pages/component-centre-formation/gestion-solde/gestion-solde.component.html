@@ -1,0 +1,84 @@
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+      <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined  [disabled]="!selectedEmploye || !selectedEmploye.length" />
+    </ng-template>
+  
+    <ng-template #end>
+      <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+    </ng-template>
+  </p-toolbar>
+  
+  <p-table
+    #dt
+    [value]="employes()"
+    [rows]="10"
+    [columns]="cols"
+    [paginator]="true"
+    [globalFilterFields]="['nom', 'prenom', 'email', 'matricule']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedEmploye"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} employees"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]"
+  >
+    <ng-template #caption>
+      <div class="flex items-center justify-between">
+        <h5 class="m-0">Gestion Employe</h5>
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search" />
+          <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+        </p-iconfield>
+      </div>
+    </ng-template>
+  
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem"><p-tableHeaderCheckbox /></th>
+        <th>Id</th>
+        <th pSortableColumn="nom">Nom <p-sortIcon field="nom" /></th>
+        <th>Prenom</th>
+        <th>Matricule</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+  
+    <ng-template pTemplate="body" let-employe>
+      <tr>
+        <td><p-tableCheckbox [value]="employe" /></td>
+        <td>{{ employe.id }}</td>
+        <td>{{ employe.nom }}</td>
+        <td>{{ employe.prenom }}</td>
+        <td>{{ employe.matricule }}</td>
+        <td>
+          <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editEmploye(employe)" />
+                <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew(employe.id)" />
+         <!-- <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteEmploye(employe)" />-->
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  
+  <p-dialog [(visible)]="employeDialog" [style]="{ width: '450px' }" header="Employe Details" [modal]="true">
+    <ng-template #content>
+      <div class="flex flex-col gap-6">
+        <div>
+          <label for="annee" class="block font-bold mb-3">Annee</label>
+          <input type="text" pInputText id="annee" [(ngModel)]="inputs.annee"   name="annee"    required />
+        </div>
+        <div>
+          <label for="soldeInitial" class="block font-bold mb-3">Solde Initial</label>
+         <input type="number" pInputText id="soldeInitial" [(ngModel)]="inputs.soldeInitial" name="soldeInitial" />
+        </div>
+      </div>
+    </ng-template>
+  
+    <ng-template #footer>
+      <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+      <p-button label="Save" icon="pi pi-check" (click)="creerSolde()" />
+    </ng-template>
+  </p-dialog>
+  
+  
+  

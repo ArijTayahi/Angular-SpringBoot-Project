@@ -1,0 +1,148 @@
+<div class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-lg">
+      <!-- Card with gradient border effect -->
+      <div class="relative p-0.5 rounded-3xl bg-gradient-to-b from-primary-500 to-transparent">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl p-8 sm:p-10 shadow-lg">
+          <!-- Header and logo -->
+          <div class="text-center mb-8">
+            <div class="w-16 h-16 mx-auto mb-6">
+              <!-- Logo can be added here -->
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Create Account</h1>
+            <p class="text-gray-500 dark:text-gray-400">Sign up to get started with ONT</p>
+          </div>
+  
+          <!-- Alert box for messages -->
+          <div *ngIf="showAlert" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+          </div>
+  
+          <!-- Registration Form -->
+          <form class="space-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- First Name -->
+              <div>
+                <label for="firstname" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">First Name *</label>
+                <input
+                  id="firstname"
+                  type="text"
+                  placeholder="First name"
+                  [(ngModel)]="newUser.prenom"
+                  name="firstname"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+                />
+              </div>
+  
+              <!-- Last Name -->
+              <div>
+                <label for="lastname" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Last Name *</label>
+                <input
+                  id="lastname"
+                  type="text"
+                  placeholder="Last name"
+                  [(ngModel)]="newUser.nom"
+                  name="lastname"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+                />
+              </div>
+            </div>
+  
+            <!-- Email -->
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
+              <input
+                id="email"
+                type="email"
+                placeholder="Email address"
+                [(ngModel)]="newUser.email"
+                name="email"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+              />
+            </div>
+            
+            <!-- Password -->
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password *</label>
+              <div class="relative">
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Password"
+                  [(ngModel)]="newUser.password"
+                  name="password"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition pr-10"
+                />
+              </div>
+            </div>
+  
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- Phone Number -->
+              <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  placeholder="Phone number"
+                  [(ngModel)]="newUser.telephone"
+                  name="phone"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+                />
+              </div>
+  
+              <!-- Date of Birth -->
+              <div>
+                <label for="dob" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date of Birth</label>
+                <input
+                  id="dob"
+                  type="date"
+                  [(ngModel)]="newUser.dateNaissance"
+                  name="dob"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+                />
+              </div>
+            </div>
+  
+            <!-- Address -->
+            <div>
+              <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
+              <input
+                id="address"
+                type="text"
+                placeholder="Your address"
+                [(ngModel)]="newUser.adresse"
+                name="address"
+                class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+              />
+            </div>
+  
+            <!-- Terms and Conditions -->
+            <div class="flex items-center">
+              <input
+                id="accept-terms"
+                type="checkbox"
+                [(ngModel)]="acceptTerms"
+                name="accept-terms"
+                class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700"
+              />
+              <label for="accept-terms" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                I accept the <a href="#" class="text-primary-600 hover:text-primary-500">terms and conditions</a>
+              </label>
+            </div>
+  
+            <!-- Submit Button -->
+            <button
+              (click)="register()"
+              class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition"
+            >
+              Sign Up
+            </button>
+          </form>
+  
+          <!-- Footer -->
+          <div class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            Already have an account? <a (click)="onLogin()" class="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 cursor-pointer">Sign in</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

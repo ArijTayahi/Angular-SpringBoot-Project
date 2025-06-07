@@ -1,0 +1,11 @@
+/* Dans votre fichier styles.css ou component.css */
+:host ::ng-deep .p-dialog-content {
+    max-height: 500px;
+    overflow-y: auto;
+  }
+  
+  
+  :host ::ng-deep .p-multiselect-panel {
+    max-height: 350px;
+  }
+  

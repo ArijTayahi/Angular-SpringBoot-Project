@@ -1,0 +1,130 @@
+<p-toolbar styleClass="mb-6">
+    <ng-template #start>
+      <p-button label="New" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+      <p-button severity="secondary" label="Delete" icon="pi pi-trash" outlined  [disabled]="!selectedEmploye || !selectedEmploye.length" />
+    </ng-template>
+  
+    <ng-template #end>
+      <p-button label="Export" icon="pi pi-upload" severity="secondary" (onClick)="exportCSV()" />
+    </ng-template>
+  </p-toolbar>
+  
+  <p-table
+    #dt
+    [value]="employes()"
+    [rows]="10"
+    [columns]="cols"
+    [paginator]="true"
+    [globalFilterFields]="['nom', 'prenom', 'email', 'matricule']"
+    [tableStyle]="{ 'min-width': '75rem' }"
+    [(selection)]="selectedEmploye"
+    [rowHover]="true"
+    dataKey="id"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} employees"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 20, 30]"
+  >
+    <ng-template #caption>
+      <div class="flex items-center justify-between">
+        <h5 class="m-0">Gestion Employe</h5>
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-search" />
+          <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..." />
+        </p-iconfield>
+      </div>
+    </ng-template>
+  
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 3rem"><p-tableHeaderCheckbox /></th>
+        <th>Id</th>
+        <th pSortableColumn="nom">Nom <p-sortIcon field="nom" /></th>
+        <th>Prenom</th>
+        <th>Email</th>
+        <th>Matricule</th>
+        <th>Telephone</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+  
+    <ng-template pTemplate="body" let-employe>
+      <tr>
+        <td><p-tableCheckbox [value]="employe" /></td>
+        <td>{{ employe.id }}</td>
+        <td>{{ employe.nom }}</td>
+        <td>{{ employe.prenom }}</td>
+        <td>{{ employe.email }}</td>
+        <td>{{ employe.matricule }}</td>
+        <td>{{ employe.tlf }}</td>
+        <td>
+          <p-button icon="pi pi-pencil" class="mr-2" [rounded]="true" [outlined]="true" (click)="editEmploye(employe)" />
+         <!-- <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true" (click)="deleteEmploye(employe)" />-->
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  
+  <p-dialog [(visible)]="employeDialog" [style]="{ width: '450px' }" header="Employe Details" [modal]="true">
+    <ng-template #content>
+      <div class="flex flex-col gap-6">
+        <div>
+          <label for="nom" class="block font-bold mb-3">Nom</label>
+          <input type="text" pInputText id="nom" [(ngModel)]="employe.nom" required autofocus />
+        </div>
+        <div>
+          <label for="prenom" class="block font-bold mb-3">Prenom</label>
+          <input type="text" pInputText id="prenom" [(ngModel)]="employe.prenom" required />
+        </div>
+        <div>
+          <label for="password" class="block font-bold mb-3">Password</label>
+          <input type="password" pInputText id="password" [(ngModel)]="employe.password" />
+        </div>
+        <div>
+          <label for="tlf" class="block font-bold mb-3">Téléphone</label>
+          <input type="text" pInputText id="tlf" [(ngModel)]="employe.tlf" />
+        </div>
+        <div>
+          <label for="matricule" class="block font-bold mb-3">Matricule</label>
+          <input type="text" pInputText id="matricule" [(ngModel)]="employe.matricule" />
+        </div>
+        <div>
+          <label for="grade" class="block font-bold mb-3">Grade</label>
+          <p-dropdown
+          id="grade"
+          [options]="grades"
+          [(ngModel)]="employe.grade"
+          placeholder="Sélectionner un grade"
+          optionLabel="label"
+          optionValue="value"  
+        ></p-dropdown>
+        </div>
+        <div>
+          <label for="adresse" class="block font-bold mb-3">Adresse</label>
+          <input type="text" pInputText id="adresse" [(ngModel)]="employe.adresse" />
+        </div>
+        <div>
+          <label for="email" class="block font-bold mb-3">Email</label>
+          <input type="email" pInputText id="email" [(ngModel)]="employe.email"  />
+        </div>
+      </div>
+       <div class="col-12 md:col-6">
+                <label for="formation" class="block font-medium mb-2">ServiceCentre</label>
+                <p-dropdown id="direction"
+                    [(ngModel)]="employe.id_service_centre"
+                    [options]="servicesCentress ()"
+                    optionLabel="titre"
+                    optionValue="id"
+                    placeholder="Sélectionner un Service Centre"
+                    [style]="{'width':'100%'}"
+                    (onChange)="onFormationSelect($event)"></p-dropdown>
+            </div>
+    </ng-template>
+  
+    <ng-template #footer>
+      <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+      <p-button label="Save" icon="pi pi-check" (click)="saveEmploye()" />
+    </ng-template>
+  </p-dialog>
+  
+  
+  
